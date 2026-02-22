@@ -1,0 +1,15 @@
+# Robots.txt for StockFlowTech
+User-agent: *
+Allow: /
+Allow: /_nuxt/
+
+# Disallow spiders from crawling unnecessary paths
+Disallow: /.nuxt/
+Disallow: /node_modules/
+Disallow: /.output/
+
+# Sitemap
+Sitemap: https://stockflowtech.com/sitemap.xml
+
+# Respect crawl delay
+Crawl-delay: 1
