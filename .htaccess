@@ -1,0 +1,36 @@
+Options -MultiViews -Indexes
+
+RewriteEngine On
+RewriteBase /
+
+# Enforce HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Serve existing files as-is (JS, CSS, images, fonts, etc.)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# SSG clean URLs: /about -> internally rewrite to /about/index.html (no redirect)
+# Nuxt 3 generate creates directory-based output: about/index.html
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}/index.html -f
+RewriteRule ^(.+?)/?$ /$1/index.html [L]
+
+# Fallback: try flat .html file (e.g. /about.html)
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}.html -f
+RewriteRule ^(.+)$ /$1.html [L]
+
+# Security headers
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Cache static assets
+<FilesMatch "\.(js|css|svg|png|jpg|jpeg|gif|ico|woff2?)$">
+  Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
+
+# Cache HTML with revalidation
+<FilesMatch "\.html$">
+  Header set Cache-Control "public, max-age=3600, must-revalidate"
+</FilesMatch>
